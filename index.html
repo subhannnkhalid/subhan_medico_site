@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subhan Medico Site - Medical Values Checker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            animation: fadeInDown 1s ease-out;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .disclaimer {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 30px;
+            color: white;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .tests-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .test-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.8s ease-out;
+        }
+        
+        .test-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .test-card h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        
+        .bp-icon { background: #ff6b6b; color: white; }
+        .sugar-icon { background: #4ecdc4; color: white; }
+        .cholesterol-icon { background: #45b7d1; color: white; }
+        .bmi-icon { background: #96ceb4; color: white; }
+        .heart-icon { background: #feca57; color: white; }
+        .temp-icon { background: #ff9ff3; color: white; }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            color: #555;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .input-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .input-group input, .input-group select {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .unit {
+            color: #777;
+            font-size: 0.9rem;
+            min-width: 60px;
+        }
+        
+        .check-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .check-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .check-btn:active {
+            transform: translateY(0);
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 12px;
+            font-weight: 500;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+        
+        .result.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .result.normal {
+            background: linear-gradient(135deg, #a8e6cf 0%, #88d8a3 100%);
+            color: #2d5016;
+            border: 2px solid #88d8a3;
+        }
+        
+        .result.warning {
+            background: linear-gradient(135deg, #ffd93d 0%, #ff9800 100%);
+            color: #8a4100;
+            border: 2px solid #ff9800;
+        }
+        
+        .result.danger {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            color: #8b0000;
+            border: 2px solid #ee5a52;
+        }
+        
+        .normal-range {
+            font-size: 0.9rem;
+            margin-top: 10px;
+            opacity: 0.8;
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .tests-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .test-card {
+                padding: 20px;
+            }
+        }
+        
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 Subhan Medico Site</h1>
+            <p>Your Trusted Medical Values Checker</p>
+        </div>
+        
+        <div class="disclaimer">
+            ⚠️ <strong>Medical Disclaimer:</strong> This tool is for educational purposes only. Always consult with healthcare professionals for medical advice and diagnosis.
+        </div>
+        
+        <div class="tests-grid">
+            <!-- Blood Pressure -->
+            <div class="test-card">
+                <h3><span class="icon bp-icon">🩺</span>Blood Pressure</h3>
+                <div class="input-group">
+                    <label>Systolic Pressure (Top Number)</label>
+                    <div class="input-row">
+                        <input type="number" id="systolic" placeholder="120" min="50" max="300">
+                        <span class="unit">mmHg</span>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Diastolic Pressure (Bottom Number)</label>
+                    <div class="input-row">
+                        <input type="number" id="diastolic" placeholder="80" min="30" max="200">
+                        <span class="unit">mmHg</span>
+                    </div>
+                </div>
+                <button class="check-btn" onclick="checkBloodPressure()">Check Blood Pressure</button>
+                <div class="result" id="bp-result"></div>
+            </div>
+            
+            <!-- Blood Sugar -->
+            <div class="test-card">
+                <h3><span class="icon sugar-icon">🍯</span>Blood Sugar</h3>
+                <div class="input-group">
+                    <label>Test Type</label>
+                    <select id="sugar-type">
+                        <option value="fasting">Fasting (8+ hours)</option>
+                        <option value="random">Random</option>
+                        <option value="postprandial">Post-meal (2 hours)</option>
+                        <option value="hba1c">HbA1c</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Blood Sugar Level</label>
+                    <div class="input-row">
+                        <input type="number" id="sugar-value" placeholder="100" min="20" max="600" step="0.1">
+                        <span class="unit" id="sugar-unit">mg/dL</span>
+                    </div>
+                </div>
+                <button class="check-btn" onclick="checkBloodSugar()">Check Blood Sugar</button>
+                <div class="result" id="sugar-result"></div>
+            </div>
+            
+            <!-- Cholesterol -->
+            <div class="test-card">
+                <h3><span class="icon cholesterol-icon">🧪</span>Cholesterol</h3>
+                <div class="input-group">
+                    <label>Total Cholesterol</label>
+                    <div class="input-row">
+                        <input type="number" id="cholesterol" placeholder="200" min="50" max="500">
+                        <span class="unit">mg/dL</span>
+                    </div>
+                </div>
+                <button class="check-btn" onclick="checkCholesterol()">Check Cholesterol</button>
+                <div class="result" id="cholesterol-result"></div>
+            </div>
+            
+            <!-- BMI Calculator -->
+            <div class="test-card">
+                <h3><span class="icon bmi-icon">⚖️</span>BMI Calculator</h3>
+                <div class="input-group">
+                    <label>Weight</label>
+                    <div class="input-row">
+                        <input type="number" id="weight" placeholder="70" min="20" max="300" step="0.1">
+                        <span class="unit">kg</span>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Height</label>
+                    <div class="input-row">
+                        <input type="number" id="height" placeholder="170" min="100" max="250" step="0.1">
+                        <span class="unit">cm</span>
+                    </div>
+                </div>
+                <button class="check-btn" onclick="checkBMI()">Calculate BMI</button>
+                <div class="result" id="bmi-result"></div>
+            </div>
+            
+            <!-- Heart Rate -->
+            <div class="test-card">
+                <h3><span class="icon heart-icon">💓</span>Heart Rate</h3>
+                <div class="input-group">
+                    <label>Age</label>
+                    <div class="input-row">
+                        <input type="number" id="age" placeholder="30" min="1" max="120">
+                        <span class="unit">years</span>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Heart Rate</label>
+                    <div class="input-row">
+                        <input type="number" id="heartrate" placeholder="72" min="30" max="220">
+                        <span class="unit">bpm</span>
+                    </div>
+                </div>
+                <button class="check-btn" onclick="checkHeartRate()">Check Heart Rate</button>
+                <div class="result" id="heartrate-result"></div>
+            </div>
+            
+            <!-- Body Temperature -->
+            <div class="test-card">
+                <h3><span class="icon temp-icon">🌡️</span>Body Temperature</h3>
+                <div class="input-group">
+                    <label>Temperature Unit</label>
+                    <select id="temp-unit">
+                        <option value="fahrenheit">Fahrenheit (°F)</option>
+                        <option value="celsius">Celsius (°C)</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Body Temperature</label>
+                    <div class="input-row">
+                        <input type="number" id="temperature" placeholder="98.6" min="90" max="110" step="0.1">
+                        <span class="unit" id="temp-display">°F</span>
+                    </div>
+                </div>
+                <button class="check-btn" onclick="checkTemperature()">Check Temperature</button>
+                <div class="result" id="temperature-result"></div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2025 Subhan Medico Site | Making Healthcare Accessible</p>
+        </div>
+    </div>
+
+    <script>
+        // Update temperature unit display
+        document.getElementById('temp-unit').addEventListener('change', function() {
+            const unit = this.value;
+            const display = document.getElementById('temp-display');
+            const input = document.getElementById('temperature');
+            
+            if (unit === 'celsius') {
+                display.textContent = '°C';
+                input.placeholder = '37.0';
+            } else {
+                display.textContent = '°F';
+                input.placeholder = '98.6';
+            }
+        });
+        
+        // Update sugar unit display
+        document.getElementById('sugar-type').addEventListener('change', function() {
+            const type = this.value;
+            const unit = document.getElementById('sugar-unit');
+            
+            if (type === 'hba1c') {
+                unit.textContent = '%';
+            } else {
+                unit.textContent = 'mg/dL';
+            }
+        });
+        
+        function showResult(elementId, message, type, normalRange) {
+            const resultDiv = document.getElementById(elementId);
+            resultDiv.className = `result ${type} show`;
+            resultDiv.innerHTML = `
+                <div>${message}</div>
+                <div class="normal-range">Normal Range: ${normalRange}</div>
+            `;
+        }
+        
+        function checkBloodPressure() {
+            const systolic = parseInt(document.getElementById('systolic').value);
+            const diastolic = parseInt(document.getElementById('diastolic').value);
+            
+            if (!systolic || !diastolic) {
+                alert('Please enter both systolic and diastolic values');
+                return;
+            }
+            
+            let message, type;
+            
+            if (systolic < 90 || diastolic < 60) {
+                message = '⬇️ Low Blood Pressure (Hypotension)';
+                type = 'warning';
+            } else if (systolic < 120 && diastolic < 80) {
+                message = '✅ Normal Blood Pressure';
+                type = 'normal';
+            } else if (systolic < 130 && diastolic < 80) {
+                message = '⚠️ Elevated Blood Pressure';
+                type = 'warning';
+            } else if (systolic < 140 || diastolic < 90) {
+                message = '🔺 Stage 1 Hypertension';
+                type = 'warning';
+            } else if (systolic < 180 && diastolic < 120) {
+                message = '🚨 Stage 2 Hypertension';
+                type = 'danger';
+            } else {
+                message = '🆘 Hypertensive Crisis - Seek immediate medical attention!';
+                type = 'danger';
+            }
+            
+            showResult('bp-result', message, type, 'Systolic: 90-120 mmHg, Diastolic: 60-80 mmHg');
+        }
+        
+        function checkBloodSugar() {
+            const value = parseFloat(document.getElementById('sugar-value').value);
+            const type = document.getElementById('sugar-type').value;
+            
+            if (!value) {
+                alert('Please enter blood sugar value');
+                return;
+            }
+            
+            let message, resultType, normalRange;
+            
+            if (type === 'fasting') {
+                if (value < 70) {
+                    message = '⬇️ Low Blood Sugar (Hypoglycemia)';
+                    resultType = 'warning';
+                } else if (value <= 99) {
+                    message = '✅ Normal Fasting Blood Sugar';
+                    resultType = 'normal';
+                } else if (value <= 125) {
+                    message = '⚠️ Pre-diabetes Range';
+                    resultType = 'warning';
+                } else {
+                    message = '🚨 Diabetes Range';
+                    resultType = 'danger';
+                }
+                normalRange = '70-99 mg/dL (fasting)';
+            } else if (type === 'random') {
+                if (value < 70) {
+                    message = '⬇️ Low Blood Sugar (Hypoglycemia)';
+                    resultType = 'warning';
+                } else if (value < 140) {
+                    message = '✅ Normal Random Blood Sugar';
+                    resultType = 'normal';
+                } else if (value < 200) {
+                    message = '⚠️ Elevated Blood Sugar';
+                    resultType = 'warning';
+                } else {
+                    message = '🚨 High Blood Sugar - Diabetes Range';
+                    resultType = 'danger';
+                }
+                normalRange = '70-140 mg/dL (random)';
+            } else if (type === 'postprandial') {
+                if (value < 70) {
+                    message = '⬇️ Low Blood Sugar (Hypoglycemia)';
+                    resultType = 'warning';
+                } else if (value < 140) {
+                    message = '✅ Normal Post-meal Blood Sugar';
+                    resultType = 'normal';
+                } else if (value < 200) {
+                    message = '⚠️ Pre-diabetes Range';
+                    resultType = 'warning';
+                } else {
+                    message = '🚨 Diabetes Range';
+                    resultType = 'danger';
+                }
+                normalRange = '70-140 mg/dL (2 hours after meal)';
+            } else if (type === 'hba1c') {
+                if (value < 5.7) {
+                    message = '✅ Normal HbA1c';
+                    resultType = 'normal';
+                } else if (value < 6.5) {
+                    message = '⚠️ Pre-diabetes Range';
+                    resultType = 'warning';
+                } else {
+                    message = '🚨 Diabetes Range';
+                    resultType = 'danger';
+                }
+                normalRange = 'Below 5.7%';
+            }
+            
+            showResult('sugar-result', message, resultType, normalRange);
+        }
+        
+        function checkCholesterol() {
+            const value = parseInt(document.getElementById('cholesterol').value);
+            
+            if (!value) {
+                alert('Please enter cholesterol value');
+                return;
+            }
+            
+            let message, type;
+            
+            if (value < 200) {
+                message = '✅ Desirable Cholesterol Level';
+                type = 'normal';
+            } else if (value < 240) {
+                message = '⚠️ Borderline High Cholesterol';
+                type = 'warning';
+            } else {
+                message = '🚨 High Cholesterol';
+                type = 'danger';
+            }
+            
+            showResult('cholesterol-result', message, type, 'Less than 200 mg/dL');
+        }
+        
+        function checkBMI() {
+            const weight = parseFloat(document.getElementById('weight').value);
+            const height = parseFloat(document.getElementById('height').value);
+            
+            if (!weight || !height) {
+                alert('Please enter both weight and height');
+                return;
+            }
+            
+            const heightInMeters = height / 100;
+            const bmi = weight / (heightInMeters * heightInMeters);
+            
+            let message, type;
+            
+            if (bmi < 18.5) {
+                message = `⬇️ Underweight (BMI: ${bmi.toFixed(1)})`;
+                type = 'warning';
+            } else if (bmi < 25) {
+                message = `✅ Normal Weight (BMI: ${bmi.toFixed(1)})`;
+                type = 'normal';
+            } else if (bmi < 30) {
+                message = `⚠️ Overweight (BMI: ${bmi.toFixed(1)})`;
+                type = 'warning';
+            } else {
+                message = `🚨 Obese (BMI: ${bmi.toFixed(1)})`;
+                type = 'danger';
+            }
+            
+            showResult('bmi-result', message, type, '18.5 - 24.9 kg/m²');
+        }
+        
+        function checkHeartRate() {
+            const age = parseInt(document.getElementById('age').value);
+            const heartRate = parseInt(document.getElementById('heartrate').value);
+            
+            if (!age || !heartRate) {
+                alert('Please enter both age and heart rate');
+                return;
+            }
+            
+            let message, type;
+            let normalRange;
+            
+            if (age < 1) {
+                normalRange = '100-160 bpm';
+            } else if (age < 2) {
+                normalRange = '90-150 bpm';
+            } else if (age < 5) {
+                normalRange = '80-140 bpm';
+            } else if (age < 12) {
+                normalRange = '70-120 bpm';
+            } else {
+                normalRange = '60-100 bpm';
+            }
+            
+            const ranges = normalRange.split('-');
+            const minRate = parseInt(ranges[0]);
+            const maxRate = parseInt(ranges[1].split(' ')[0]);
+            
+            if (heartRate < minRate) {
+                message = '⬇️ Bradycardia (Slow Heart Rate)';
+                type = 'warning';
+            } else if (heartRate <= maxRate) {
+                message = '✅ Normal Heart Rate';
+                type = 'normal';
+            } else {
+                message = '⬆️ Tachycardia (Fast Heart Rate)';
+                type = 'warning';
+            }
+            
+            showResult('heartrate-result', message, type, normalRange);
+        }
+        
+        function checkTemperature() {
+            let temp = parseFloat(document.getElementById('temperature').value);
+            const unit = document.getElementById('temp-unit').value;
+            
+            if (!temp) {
+                alert('Please enter temperature value');
+                return;
+            }
+            
+            // Convert to Fahrenheit for comparison
+            if (unit === 'celsius') {
+                temp = (temp * 9/5) + 32;
+            }
+            
+            let message, type;
+            
+            if (temp < 95) {
+                message = '🥶 Hypothermia - Dangerously Low';
+                type = 'danger';
+            } else if (temp < 97.8) {
+                message = '⬇️ Below Normal Body Temperature';
+                type = 'warning';
+            } else if (temp <= 99.1) {
+                message = '✅ Normal Body Temperature';
+                type = 'normal';
+            } else if (temp <= 100.4) {
+                message = '⚠️ Low-grade Fever';
+                type = 'warning';
+            } else if (temp <= 103) {
+                message = '🔥 Moderate Fever';
+                type = 'danger';
+            } else {
+                message = '🆘 High Fever - Seek immediate medical attention!';
+                type = 'danger';
+            }
+            
+            const normalRange = unit === 'celsius' ? '36.5 - 37.5°C' : '97.8 - 99.1°F';
+            showResult('temperature-result', message, type, normalRange);
+        }
+    </script>
+</body>
+</html>
